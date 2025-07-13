@@ -8,6 +8,11 @@ body {
   overflow-x: hidden;
   animation: fondoAnimado 10s infinite linear;
 }
+html, body {
+  max-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
 
 @keyframes fondoAnimado {
   0% { background: linear-gradient(135deg, #fdf1ff, #ffe1e1); }
@@ -91,7 +96,11 @@ h1, h2 {
 #respuestaInput {
   font-size: 20px;
   padding: 8px;
+  width: 200px; /* Valor fijo o porcentaje */
+  max-width: 80%; /* Se adapta sin romper el diseño */
+  box-sizing: border-box;
   margin-bottom: 10px;
+  transition: all 0.2s ease-in-out;
 }
 
 #resultadoFinal {
