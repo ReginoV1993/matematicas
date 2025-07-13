@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mundo Matemático</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <button id="botonRegresar" onclick="volverAlMenu()">🏠</button>
+  <h1>🎉 ¡Bienvenido al Mundo de las Matemáticas! 🎉</h1>
+  <p>¿Qué te gustaría hacer hoy?</p>
+
+  <img class="imagenBienvenida" src="imagen/feliz.png" alt="Imagen feliz de matemáticas" />
+
+  <div id="menu">
+    <button class="boton" onclick="mostrarSuma()">➕ Sumar</button>
+    <button class="boton" onclick="mostrarResta()">➖ Restar</button>
+    <button class="boton" onclick="mostrarMultiplicacion()">✖️ Multiplicar</button>
+  </div>
+
+  <div id="contenido"></div>
+
+  <audio id="sonidoBien" src="aplausos.mp3" preload="auto"></audio>
+  <audio id="sonidoMal" src="yacasii.mp3" preload="auto"></audio>
+
+  <script>
+    let nivel = 1, cantidad = 0, actual = 0;
+    let preguntas = [], respuestas = [];
+    let preguntasMultiplicar = [], respuestasMultiplicar = [], erroresPorTabla = {};
+    let actualMultiplicar = 0;
+
+    function volverAlMenu() {
+      document.getElementById("menu").style.display = "block";
+      document.getElementById("contenido").innerHTML = "";
+      document.getElementById("botonRegresar").style.display = "none";
+    }
+
+    function mostrarSuma() {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("botonRegresar").style.display = "inline-block";
+      document.getElementById("contenido").innerHTML = `
+        <h2>➕ ¡Vamos a sumar!</h2>
+        <p>Selecciona el nivel de dificultad:</p>
+        <button class="boton" onclick="elegirNivel(1)">Nivel 1: Unidades</button>
+        <button class="boton" onclick="elegirNivel(2)">Nivel 2: Decenas</button>
+        <button class="boton" onclick="elegirNivel(3)">Nivel 3: Centenas</button>
+        <div id="configuracion"></div>
+        <div id="pregunta"></div>
+        <input type="number" id="respuestaInput" />
+        <button class="boton" onclick="verificarRespuesta()">Responder</button>
+        <div id="resultadoFinal"></div>
+      `;
+    }
+
+    function mostrarResta() {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("botonRegresar").style.display = "inline-block";
+      document.getElementById("contenido").innerHTML = `
+        <h2>➖ ¡Vamos a restar!</h2>
+        <p>Selecciona el nivel de dificultad:</p>
+        <button class="boton" onclick="elegirNivelResta(1)">Nivel 1: Unidades</button>
+        <button class="boton" onclick="elegirNivelResta(2)">Nivel 2: Decenas</button>
+        <button class="boton" onclick="elegirNivelResta(3)">Nivel 3: Centenas</button>
+        <div id="configuracion"></div>
+        <div id="pregunta"></div>
+        <input type="number" id="respuestaInput" />
+        <button class="boton" onclick="verificarRespuestaResta()">Responder</button>
+        <div id="resultadoFinal"></div>
+      `;
+    }
+
+    function mostrarMultiplicacion() {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("botonRegresar").style.display = "inline-block";
+      document.getElementById("contenido").innerHTML = `
+        <h2>✖️ ¡Vamos a multiplicar!</h2>
+        <div id="seleccionTablas">
+          <p>Selecciona las tablas que quieras practicar:</p>
+          <div>
+            ${[...Array(10)].map((_, i) => 
+              `<label><input type="checkbox" value="${i+1}" />${i+1}</label>`).join(' ')}
+          </div>
+        </div>
+        <label>Cantidad de preguntas:</label>
+        <input type="number" id="cantidad" value="5" /><br/>
+        <button class="boton" onclick="comenzarJuegoMultiplicar()">Comenzar</button>
+        <div id="pregunta"></div>
+        <input type="number" id="respuestaInput" />
+        <button class="boton" onclick="verificarRespuestaMultiplicar()">Responder</button>
+        <div id="resultadoFinal"></div>
+      `;
+    }
+
+    function elegirNivel(n) {
+      nivel = n;
+      document.getElementById("configuracion").innerHTML = `
+        <p>¿Cuántas operaciones quieres realizar?</p>
+        <input type="number" id="cantidadEjercicios" value="5" />
+        <button class="boton" onclick="iniciarSumas()">Comenzar</button>
+      `;
+    }
+
+    function elegirNivelResta(n) {
+      nivel = n;
+      document.getElementById("configuracion").innerHTML = `
+        <p>¿Cuántas operaciones quieres realizar?</p>
+        <input type="number" id="cantidadEjercicios" value="5" />
+        <button class="boton" onclick="iniciarRestas()">Comenzar</button>
+      `;
+    }
+
+    function iniciarSumas() {
+      cantidad = parseInt(document.getElementById("cantidadEjercicios").value);
+      preguntas = [];
+      respuestas = [];
+      actual = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      for (let i = 0; i < cantidad; i++) {
+        const max = nivel === 1 ? 9 : nivel === 2 ? 99 : 999;
+        const a = Math.floor(Math.random() * (max + 1));
+        const b = Math.floor(Math.random() * (max + 1));
+        preguntas.push({ a, b });
+      }
+      mostrarPreguntaSuma();
+    }
+
+    function iniciarRestas() {
+      cantidad = parseInt(document.getElementById("cantidadEjercicios").value);
+      preguntas = [];
+      respuestas = [];
+      actual = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      for (let i = 0; i < cantidad; i++) {
+        const max = nivel === 1 ? 9 : nivel === 2 ? 99 : 999;
+        let a = Math.floor(Math.random() * (max + 1));
+        let b = Math.floor(Math.random() * (max + 1));
+        if (b > a) [a, b] = [b, a];
+        preguntas.push({ a, b });
+      }
+      mostrarPreguntaResta();
+    }
+
+    function comenzarJuegoMultiplicar() {
+      preguntasMultiplicar = [];
+      respuestasMultiplicar = [];
+      erroresPorTabla = {};
+      actualMultiplicar = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      const checkboxes = document.querySelectorAll('#seleccionTablas input[type="checkbox"]');
+      const tablas = Array.from(checkboxes).filter(c => c.checked).map(c => parseInt(c.value));
+
+      if (tablas.length === 0) {
+        alert("Selecciona al menos una tabla para comenzar.");
+        return;
+      }
+
+      const cantidad = parseInt(document.getElementById("cantidad").value);
+      for (let i = 0; i < cantidad; i++) {
+        const tabla = tablas[Math.floor(Math.random() * tablas.length)];
+        const factor = Math.floor(Math.random() * 10) + 1;
+        preguntasMultiplicar.push({ tabla, factor });
+      }
+      mostrarPreguntaMultiplicar();
+    }
+
+    function mostrarPreguntaSuma() {
+      const p = preguntas[actual];
+      document.getElementById("pregunta").innerHTML = `🍭 ¿Cuánto es ${p.a} + ${p.b}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function mostrarPreguntaResta() {
+      const p = preguntas[actual];
+      document.getElementById("pregunta").innerHTML = `🍬 ¿Cuánto es ${p.a} - ${p.b}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function mostrarPreguntaMultiplicar() {
+      const p = preguntasMultiplicar[actualMultiplicar];
+      document.getElementById("pregunta").innerHTML = `🔢 ¿Cuánto es ${p.tabla} x ${p.factor}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function verificarRespuestaMultiplicar() {
+      const valorInput = document.getElementById("respuestaInput").value.trim();
+      if (valorInput === "" || isNaN(valorInput)) {
+        alert("⛔️ 🙈 Por favor, escribe un número antes de responder.");
+        return;
+      }
+
+      const respuesta = parseInt(valorInput);
+      const p = preguntasMultiplicar[actualMultiplicar];
+      const correcta = p.tabla * p.factor;
+
+      if (respuesta === correcta) {
+        document.getElementById("sonidoBien").play();
+        mostrarEstrellas();
+        respuestasMultiplicar.push(true);
+      } else {
+        document.getElementById("sonidoMal").play();
+        alert("🙈 Ups... sigue intentando");
+        respuestasMultiplicar.push(false);
+        erroresPorTabla[p.tabla] = (erroresPorTabla[p.tabla] || 0) + 1;
+      }
+
+      actualMultiplicar++;
+      if (actualMultiplicar < preguntasMultiplicar.length) {
+        setTimeout(mostrarPreguntaMultiplicar, 800);
+      } else {
+        setTimeout(mostrarResultadosMultiplicar, 800);
+      }
+    }
+
+    function mostrarResultadosMultiplicar() {
+      const buenas = respuestasMultiplicar.filter(r => r).length;
+      const malas = respuestasMultiplicar.length - buenas;
+      let peorTabla = Object.keys(erroresPorTabla).sort((a, b) => erroresPorTabla[b] - erroresPorTabla[a])[0];
+      document.getElementById("resultadoFinal").innerText =
+        `✔️ Correctas: ${buenas} | ❌ Incorrectas: ${malas} | 🧠 Tabla más difícil: ${peorTabla || "¡Ninguna!"}`;
+    }
+    
+
+    function elegirNivel(n) {
+      nivel = n;
+      document.getElementById("configuracion").innerHTML = `
+        <p>¿Cuántas operaciones quieres realizar?</p>
+        <input type="number" id="cantidadEjercicios" value="5" />
+        <button class="boton" onclick="iniciarSumas()">Comenzar</button>
+      `;
+    }
+
+    function iniciarSumas() {
+      cantidad = parseInt(document.getElementById("cantidadEjercicios").value);
+      preguntas = [];
+      respuestas = [];
+      actual = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      for (let i = 0; i < cantidad; i++) {
+        const max = nivel === 1 ? 9 : nivel === 2 ? 99 : 999;
+        const a = Math.floor(Math.random() * (max + 1));
+        const b = Math.floor(Math.random() * (max + 1));
+        preguntas.push({ a, b });
+      }
+
+      mostrarPregunta();
+    }
+
+    function mostrarPregunta() {
+      const p = preguntas[actual];
+      document.getElementById("pregunta").innerHTML = `🍭 ¿Cuánto es ${p.a} + ${p.b}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function verificarRespuesta() {
+      const sonidoBien = document.getElementById("sonidoBien");
+      const sonidoMal = document.getElementById("sonidoMal");
+
+      const valorInput = document.getElementById("respuestaInput").value.trim();
+      if (valorInput === "" || isNaN(valorInput)) {
+        alert("😅 ¡Escribe tu respuesta antes de continuar!");
+        return;
+      }
+
+      const respuesta = parseInt(valorInput);
+      const p = preguntas[actual];
+      const correcta = p.a + p.b;
+
+      if (respuesta === correcta) {
+        sonidoBien.play();
+        mostrarEstrellas();
+        respuestas.push(true);
+      } else {
+        sonidoMal.play();
+        alert("🙈 ¡Ya casi, intenta la siguiente!");
+        respuestas.push(false);
+      }
+
+      actual++;
+      if (actual < cantidad) {
+        setTimeout(mostrarPregunta, 1000);
+      } else {
+        mostrarResumen();
+      }
+    }
+    
+    function elegirNivel(n) {
+      nivel = n;
+      document.getElementById("configuracion").innerHTML = `
+        <p>¿Cuántas operaciones quieres realizar?</p>
+        <input type="number" id="cantidadEjercicios" value="5" />
+        <button class="boton" onclick="iniciarSumas()">Comenzar</button>
+      `;
+    }
+
+    function elegirNivelResta(n) {
+      nivel = n;
+      document.getElementById("configuracion").innerHTML = `
+        <p>¿Cuántas operaciones quieres realizar?</p>
+        <input type="number" id="cantidadEjercicios" value="5" />
+        <button class="boton" onclick="iniciarRestas()">Comenzar</button>
+      `;
+    }
+
+    function iniciarSumas() {
+      cantidad = parseInt(document.getElementById("cantidadEjercicios").value);
+      preguntas = [];
+      respuestas = [];
+      actual = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      for (let i = 0; i < cantidad; i++) {
+        const max = nivel === 1 ? 9 : nivel === 2 ? 99 : 999;
+        const a = Math.floor(Math.random() * (max + 1));
+        const b = Math.floor(Math.random() * (max + 1));
+        preguntas.push({ a, b });
+      }
+
+      mostrarPregunta();
+    }
+
+    function iniciarRestas() {
+      cantidad = parseInt(document.getElementById("cantidadEjercicios").value);
+      preguntas = [];
+      respuestas = [];
+      actual = 0;
+      document.getElementById("resultadoFinal").innerText = "";
+
+      for (let i = 0; i < cantidad; i++) {
+        const max = nivel === 1 ? 9 : nivel === 2 ? 99 : 999;
+        let a = Math.floor(Math.random() * (max + 1));
+        let b = Math.floor(Math.random() * (max + 1));
+        if (b > a) [a, b] = [b, a];
+        preguntas.push({ a, b });
+      }
+
+      mostrarPreguntaResta();
+    }
+
+    function mostrarPregunta() {
+      const p = preguntas[actual];
+      document.getElementById("pregunta").innerHTML = `🍭 ¿Cuánto es ${p.a} + ${p.b}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function mostrarPreguntaResta() {
+      const p = preguntas[actual];
+      document.getElementById("pregunta").innerHTML = `🍬 ¿Cuánto es ${p.a} - ${p.b}?`;
+      document.getElementById("respuestaInput").value = "";
+      document.getElementById("respuestaInput").focus();
+    }
+
+    function verificarRespuesta() {
+      const sonidoBien = document.getElementById("sonidoBien");
+      const sonidoMal = document.getElementById("sonidoMal");
+
+      const valorInput = document.getElementById("respuestaInput").value.trim();
+      if (valorInput === "" || isNaN(valorInput)) {
+        alert("😅 ¡Escribe tu respuesta antes de continuar!");
+        return;
+      }
+
+      const respuesta = parseInt(valorInput);
+      const p = preguntas[actual];
+      const correcta = p.a + p.b;
+
+      if (respuesta === correcta) {
+        sonidoBien.play();
+        mostrarEstrellas();
+        respuestas.push(true);
+      } else {
+        sonidoMal.play();
+        alert("🙈 ¡Ya casi, intenta la siguiente!");
+        respuestas.push(false);
+      }
+
+      actual++;
+      if (actual < cantidad) {
+        setTimeout(mostrarPregunta, 1000);
+      } else {
+        mostrarResumen();
+      }
+    }
+
+    function verificarRespuestaResta() {
+      const sonidoBien = document.getElementById("sonidoBien");
+      const sonidoMal = document.getElementById("sonidoMal");
+
+      const valorInput = document.getElementById("respuestaInput").value.trim();
+      if (valorInput === "" || isNaN(valorInput)) {
+        alert("😅 ¡Escribe tu respuesta antes de continuar!");
+        return;
+      }
+
+      const respuesta = parseInt(valorInput);
+      const p = preguntas[actual];
+      const correcta = p.a - p.b;
+
+      if (respuesta === correcta) {
+        sonidoBien.play();
+        mostrarEstrellas();
+        respuestas.push(true);
+      } else {
+        sonidoMal.play();
+        alert("🙈 ¡Ya casi, intenta la siguiente!");
+        respuestas.push(false);
+      }
+
+      actual++;
+      if (actual < cantidad) {
+        setTimeout(mostrarPreguntaResta, 1000);
+      } else {
+        mostrarResumen();
+      }
+    }
+
+    
+
+    function mostrarEstrellas() {
+      for (let i = 0; i < 15; i++) {
+        const estrella = document.createElement("div");
+        estrella.className = "estrella";
+        estrella.textContent = "⭐";
+        estrella.style.left = `${Math.random() * window.innerWidth}px`;
+        estrella.style.top = `${Math.random() * 200 + 100}px`;
+        estrella.style.fontSize = `${20 + Math.random() * 20}px`;
+        document.body.appendChild(estrella);
+        setTimeout(() => estrella.remove(), 1200);
+      }
+    }
+    function mostrarResumen() {
+        const buenas = respuestas.filter(r => r).length;
+        const malas = respuestas.length - buenas;
+        document.getElementById("resultadoFinal").innerText =
+     `🎉 ¡Terminaste! Correctas: ${buenas} | Incorrectas: ${malas}`;
+    }
+
+  </script>
+</body>
+</html>
+
+

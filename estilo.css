@@ -1,0 +1,105 @@
+/* Estilo general del cuerpo */
+body {
+  font-family: 'Comic Sans MS', cursive;
+  background: linear-gradient(to right, #fdf1ff, #ffe1e1);
+  text-align: center;
+  padding: 30px;
+  position: relative;
+  overflow-x: hidden;
+  animation: fondoAnimado 10s infinite linear;
+}
+
+@keyframes fondoAnimado {
+  0% { background: linear-gradient(135deg, #fdf1ff, #ffe1e1); }
+  50% { background: linear-gradient(135deg, #ffeaa7, #c0ffe4); }
+  100% { background: linear-gradient(135deg, #fdf1ff, #ffe1e1); }
+}
+
+/* Títulos animados */
+h1, h2 {
+  color: #ff4081;
+  animation: rebotar 1s infinite;
+}
+
+@keyframes rebotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Imagen de bienvenida */
+.imagenBienvenida {
+  width: 280px;
+  margin: 20px auto;
+}
+
+/* Botones principales */
+.boton {
+  padding: 12px 25px;
+  background-color: #00e676;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  margin: 10px;
+  transition: transform 0.2s;
+}
+
+.boton:hover {
+  background-color: #00c267;
+  transform: scale(1.1);
+}
+
+/* Botón de regreso */
+#botonRegresar {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #ffcb05;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 1000;
+  display: none;
+}
+
+#botonRegresar:hover {
+  background-color: #ffc107;
+}
+
+/* Estrellitas de celebración */
+.estrella {
+  position: absolute;
+  font-size: 24px;
+  animation: flotar 1.2s ease-out forwards;
+  color: gold;
+  pointer-events: none;
+}
+
+@keyframes flotar {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-100px) scale(1.5); }
+}
+
+/* Preguntas y campos */
+#pregunta {
+  font-size: 24px;
+  margin: 20px;
+}
+
+#respuestaInput {
+  font-size: 20px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+#resultadoFinal {
+  font-size: 20px;
+  color: #3f51b5;
+  font-weight: bold;
+  margin-top: 30px;
+}
+
+/* Sección de selección de tablas */
+#seleccionTab
