@@ -224,7 +224,8 @@
       document.getElementById("resultadoFinal").innerText =
         `✔️ Correctas: ${buenas} | ❌ Incorrectas: ${malas} | 🧠 Tabla más difícil: ${peorTabla || "¡Ninguna!"}`;
     }
-    
+        <!-- aqui termina multiplicar-->
+
 
     function elegirNivel(n) {
       nivel = n;
@@ -290,6 +291,7 @@
         mostrarResumen();
       }
     }
+    <!-- aqui termina suma-->
     
     function elegirNivel(n) {
       nivel = n;
@@ -429,7 +431,7 @@
         const estrella = document.createElement("div");
         estrella.className = "estrella";
         estrella.textContent = "⭐";
-        estrella.style.left = `${Math.random() * window.innerWidth}px`;
+        estrella.style.left = `${Math.random() * (window.innerWidth - 40)}px`;
         estrella.style.top = `${Math.random() * 200 + 100}px`;
         estrella.style.fontSize = `${20 + Math.random() * 20}px`;
         document.body.appendChild(estrella);

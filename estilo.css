@@ -100,6 +100,34 @@ h1, h2 {
   font-weight: bold;
   margin-top: 30px;
 }
+@media screen and (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  h1, h2 {
+    font-size: 24px;
+  }
+
+  .boton {
+    font-size: 16px;
+    padding: 10px 18px;
+  }
+
+  #respuestaInput {
+    font-size: 18px;
+    width: 80%;
+  }
+
+  .imagenBienvenida {
+    width: 200px;
+  }
+
+  .estrella {
+    font-size: 18px !important;
+    top: 60px !important; /* más arriba para móviles */
+  }
+}
 
 /* Sección de selección de tablas */
 #seleccionTab
